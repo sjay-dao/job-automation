@@ -1,0 +1,14 @@
+.env
+.selenium/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+linkedin_jobs.csv
+jobs_seen.json
+*.log
+Thumbs.db
+Desktop.ini

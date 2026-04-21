@@ -1,0 +1,302 @@
+:root {
+  --bg: #f4efe6;
+  --panel: rgba(255, 252, 247, 0.86);
+  --panel-strong: #fffaf2;
+  --text: #1e1a16;
+  --muted: #655b52;
+  --accent: #0f766e;
+  --accent-2: #d97706;
+  --border: rgba(44, 34, 22, 0.12);
+  --shadow: 0 20px 60px rgba(48, 33, 10, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Space Grotesk", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(217, 119, 6, 0.16), transparent 28%),
+    radial-gradient(circle at top right, rgba(15, 118, 110, 0.18), transparent 25%),
+    linear-gradient(180deg, #f8f4ed 0%, var(--bg) 100%);
+}
+
+.page-shell {
+  width: min(1200px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 32px 0 56px;
+}
+
+.hero,
+.control-panel,
+.summary-card,
+.job-card {
+  backdrop-filter: blur(14px);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  border-radius: 28px;
+  padding: 28px;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.75rem;
+  color: var(--accent);
+}
+
+.hero h1,
+.results-header h2 {
+  margin: 0;
+  line-height: 1;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 4vw, 4rem);
+  max-width: 12ch;
+}
+
+.subcopy {
+  max-width: 56ch;
+  color: var(--muted);
+  font-size: 1.04rem;
+}
+
+.score-note {
+  margin: 14px 0 0;
+  max-width: 54ch;
+  color: var(--muted);
+  font-size: 0.95rem;
+  padding-left: 14px;
+  border-left: 3px solid rgba(15, 118, 110, 0.28);
+}
+
+.hero-actions {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.primary-btn,
+.ghost-btn,
+.job-link {
+  border: 0;
+  border-radius: 999px;
+  padding: 14px 18px;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 150ms ease, opacity 150ms ease, background 150ms ease;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, var(--accent), #115e59);
+  color: white;
+}
+
+.ghost-btn,
+.job-link {
+  background: var(--panel-strong);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.primary-btn:hover,
+.ghost-btn:hover,
+.job-link:hover {
+  transform: translateY(-1px);
+}
+
+.status-card {
+  display: grid;
+  gap: 4px;
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(255, 250, 242, 0.8);
+  border: 1px solid var(--border);
+}
+
+.status-label,
+.status-meta,
+.job-meta,
+.job-breakdown,
+.job-company,
+.job-description,
+summary {
+  color: var(--muted);
+}
+
+.status-meta,
+.job-breakdown,
+.job-description,
+.job-meta {
+  font-size: 0.95rem;
+}
+
+.control-panel {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 24px;
+}
+
+.control {
+  display: grid;
+  gap: 8px;
+}
+
+.control span {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.control input,
+.control select {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.9);
+  font: inherit;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.summary-card {
+  padding: 22px;
+  border-radius: 22px;
+}
+
+.summary-card span {
+  display: block;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.summary-card strong {
+  font-size: 1.6rem;
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  margin-top: 32px;
+}
+
+.jobs-list {
+  display: grid;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.job-card {
+  border-radius: 24px;
+  padding: 22px;
+}
+
+.job-card--opened {
+  border-color: rgba(15, 118, 110, 0.32);
+  box-shadow: 0 20px 60px rgba(15, 118, 110, 0.14);
+}
+
+.job-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: start;
+}
+
+.job-score {
+  margin: 0 0 8px;
+  font-family: "IBM Plex Mono", monospace;
+  color: var(--accent-2);
+}
+
+.job-title {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.job-company {
+  margin: 8px 0 0;
+}
+
+.job-status {
+  margin: 10px 0 0;
+  min-height: 1em;
+  font-size: 0.82rem;
+  font-family: "IBM Plex Mono", monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: transparent;
+}
+
+.job-status--opened {
+  color: var(--accent);
+}
+
+.job-meta {
+  margin-top: 14px;
+  line-height: 1.6;
+}
+
+.job-breakdown {
+  margin-top: 14px;
+  padding: 14px 16px;
+  background: rgba(15, 118, 110, 0.06);
+  border-radius: 16px;
+  border: 1px dashed rgba(15, 118, 110, 0.22);
+}
+
+.job-details {
+  margin-top: 16px;
+}
+
+.job-description {
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.empty-state {
+  padding: 36px;
+  text-align: center;
+  background: var(--panel);
+  border-radius: 24px;
+  border: 1px solid var(--border);
+}
+
+@media (max-width: 900px) {
+  .hero,
+  .control-panel,
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .job-card-top {
+    flex-direction: column;
+  }
+
+  .job-link {
+    width: 100%;
+    text-align: center;
+  }
+}

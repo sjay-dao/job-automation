@@ -1,0 +1,274 @@
+{
+  "job_titles": [
+    "Software Engineer",
+    "Backend Developer",
+    "Full Stack Developer",
+    "Web Developer",
+    "PHP Developer",
+    "Java Developer",
+    "Node.js Developer",
+    "C# Developer",
+    "Data Analyst",
+    "DBA",
+    "DevOps Engineer",
+    "Cloud Engineer",
+    "IT Support Specialist",
+    "Frontend Developer"
+  ],
+  "location": "Philippines",
+  "date_posted": "today",
+  "max_applicants": null,
+  "max_jobs_per_keyword": 250,
+  "browser": {
+    "headless": false
+  },
+  "scraping": {
+    "scroll_pause_seconds": 1.1,
+    "scroll_step_px": 640,
+    "card_settle_seconds": 0.8,
+    "between_cards_min_seconds": 0.8,
+    "between_cards_max_seconds": 1.6,
+    "between_keywords_min_seconds": 2.0,
+    "between_keywords_max_seconds": 4.0
+  },
+  "output_csv": "linkedin_jobs.csv",
+  "jobs_seen_file": "jobs_seen.json",
+  "linkedin": {
+    "login_url": "https://www.linkedin.com/login",
+    "jobs_url": "https://www.linkedin.com/jobs/search/"
+  },
+  "resume_profile": {
+    "preferred_title_keywords": {
+      "software engineer": 7,
+      "backend": 8,
+      "backend developer": 9,
+      "full stack": 7,
+      "web developer": 5,
+      "php developer": 5,
+      "java developer": 8,
+      "node.js developer": 5,
+      "c# developer": 4,
+      "data analyst": 4,
+      "dba": 6,
+      "database administrator": 6,
+      "devops engineer": 4,
+      "cloud engineer": 4,
+      "frontend developer": 5,
+      "it support": 3
+    },
+    "title_penalties": {
+      "senior": -6,
+      "lead": -7,
+      "principal": -9,
+      "manager": -10,
+      "director": -12,
+      "architect": -6,
+      "intern": -4
+    },
+    "skills": {
+      "Java": {
+        "years": 4.0,
+        "category": "Programming Languages",
+        "aliases": ["java", "core java"]
+      },
+      "JavaScript": {
+        "years": 4.0,
+        "category": "Programming Languages",
+        "aliases": ["javascript", "js", "ecmascript"]
+      },
+      "SQL/PL-SQL": {
+        "years": 4.0,
+        "category": "Databases",
+        "aliases": ["sql", "pl/sql", "plsql", "stored procedures"]
+      },
+      "PHP": {
+        "years": 2.0,
+        "category": "Programming Languages",
+        "aliases": ["php"]
+      },
+      "C#": {
+        "years": 1.0,
+        "category": "Programming Languages",
+        "aliases": ["c#", ".net", "asp.net"]
+      },
+      "Spring Boot": {
+        "years": 2.0,
+        "category": "Web Development",
+        "aliases": ["spring boot", "spring"]
+      },
+      "React.js": {
+        "years": 2.0,
+        "category": "Web Development",
+        "aliases": ["react", "react.js"]
+      },
+      "Node.js/Express": {
+        "years": 1.5,
+        "category": "Web Development",
+        "aliases": ["node.js", "nodejs", "express", "express.js"]
+      },
+      "Laravel": {
+        "years": 1.0,
+        "category": "Web Development",
+        "aliases": ["laravel"]
+      },
+      "Oracle DB": {
+        "years": 3.0,
+        "category": "Databases",
+        "aliases": ["oracle db", "oracle database", "oracle"]
+      },
+      "MySQL": {
+        "years": 2.0,
+        "category": "Databases",
+        "aliases": ["mysql"]
+      },
+      "PostgreSQL": {
+        "years": 1.0,
+        "category": "Databases",
+        "aliases": ["postgresql", "postgres"]
+      },
+      "MongoDB": {
+        "years": 1.0,
+        "category": "Databases",
+        "aliases": ["mongodb", "mongo"]
+      },
+      "REST APIs": {
+        "years": 4.0,
+        "category": "Web Development",
+        "aliases": ["rest api", "restful api", "api integration", "rest"]
+      },
+      "System Integration": {
+        "years": 3.0,
+        "category": "Methodologies",
+        "aliases": ["system integration", "integration", "third-party integration"]
+      },
+      "Git/GitHub": {
+        "years": 3.0,
+        "category": "Other",
+        "aliases": ["git", "github", "gitlab"]
+      },
+      "Docker": {
+        "years": 1.0,
+        "category": "Cloud & DevOps",
+        "aliases": ["docker", "containerization"]
+      },
+      "Google Cloud": {
+        "years": 1.0,
+        "category": "Cloud & DevOps",
+        "aliases": ["google cloud", "gcp"]
+      },
+      "Selenium Automation": {
+        "years": 1.0,
+        "category": "Other",
+        "aliases": ["selenium", "test automation", "automation testing"]
+      }
+    }
+  },
+  "scoring": {
+    "Programming Languages": {
+      "weight": 5,
+      "keywords": [
+        "python",
+        "java",
+        "javascript",
+        "typescript",
+        "php",
+        "c#",
+        ".net",
+        "node.js",
+        "nodejs",
+        "sql"
+      ]
+    },
+    "Web Development": {
+      "weight": 4,
+      "keywords": [
+        "html",
+        "css",
+        "react",
+        "next.js",
+        "vue",
+        "angular",
+        "rest",
+        "api",
+        "full stack",
+        "frontend",
+        "backend"
+      ]
+    },
+    "Cloud & DevOps": {
+      "weight": 4,
+      "keywords": [
+        "aws",
+        "azure",
+        "gcp",
+        "docker",
+        "kubernetes",
+        "devops",
+        "ci/cd",
+        "jenkins",
+        "terraform",
+        "cloud"
+      ]
+    },
+    "Databases": {
+      "weight": 4,
+      "keywords": [
+        "mysql",
+        "postgresql",
+        "postgres",
+        "mongodb",
+        "oracle",
+        "sql server",
+        "database",
+        "dba",
+        "redis"
+      ]
+    },
+    "Security": {
+      "weight": 3,
+      "keywords": [
+        "security",
+        "owasp",
+        "iam",
+        "sso",
+        "oauth",
+        "authentication",
+        "authorization",
+        "cybersecurity"
+      ]
+    },
+    "OS": {
+      "weight": 2,
+      "keywords": [
+        "linux",
+        "windows",
+        "unix",
+        "ubuntu"
+      ]
+    },
+    "Methodologies": {
+      "weight": 2,
+      "keywords": [
+        "agile",
+        "scrum",
+        "kanban",
+        "tdd",
+        "oop",
+        "microservices",
+        "problem solving"
+      ]
+    },
+    "Other": {
+      "weight": 1,
+      "keywords": [
+        "git",
+        "communication",
+        "team player",
+        "documentation",
+        "support",
+        "troubleshooting",
+        "analyst"
+      ]
+    }
+  }
+}

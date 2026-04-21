@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Automation Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Job Review Console</p>
+        <h1>High-signal job matches, ranked around your actual experience.</h1>
+        <p class="subcopy">
+          Review the latest scraped roles, filter by keyword or company, and jump straight to the original listing.
+        </p>
+        <p class="score-note">
+          Match score is a ranking signal, not a probability of getting hired.
+        </p>
+      </div>
+      <div class="hero-actions">
+        <button id="runBtn" class="primary-btn">Run Scraper</button>
+        <button id="refreshBtn" class="ghost-btn">Refresh Jobs</button>
+        <div class="status-card">
+          <span class="status-label">Status</span>
+          <strong id="statusText">Idle</strong>
+          <span id="csvPath" class="status-meta"></span>
+        </div>
+      </div>
+    </header>
+
+    <section class="control-panel">
+      <label class="control">
+        <span>Search</span>
+        <input id="searchInput" type="search" placeholder="Filter by title, company, skill, or location">
+      </label>
+      <label class="control">
+        <span>Minimum match score</span>
+        <input id="minScoreInput" type="number" min="0" step="1" value="0">
+      </label>
+      <label class="control">
+        <span>Sort by</span>
+        <select id="sortSelect">
+          <option value="score">Highest match score</option>
+          <option value="date_posted">Newest label</option>
+          <option value="company">Company</option>
+          <option value="title">Title</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="summary-grid" id="summaryGrid">
+      <article class="summary-card">
+        <span>Total jobs</span>
+        <strong id="totalJobs">0</strong>
+      </article>
+      <article class="summary-card">
+        <span>Average match score</span>
+        <strong id="averageScore">0</strong>
+      </article>
+      <article class="summary-card">
+        <span>Top company</span>
+        <strong id="topCompany">-</strong>
+      </article>
+    </section>
+
+    <section class="results-header">
+      <div>
+        <p class="eyebrow">Results</p>
+        <h2 id="resultsCount">0 jobs</h2>
+      </div>
+    </section>
+
+    <section id="jobsList" class="jobs-list"></section>
+  </div>
+
+  <template id="jobCardTemplate">
+    <article class="job-card">
+      <div class="job-card-top">
+        <div>
+          <p class="job-score"></p>
+          <h3 class="job-title"></h3>
+          <p class="job-company"></p>
+          <p class="job-status"></p>
+        </div>
+        <a class="job-link" target="_blank" rel="noopener noreferrer">Open Listing</a>
+      </div>
+      <div class="job-meta"></div>
+      <p class="job-breakdown"></p>
+      <details class="job-details">
+        <summary>View description</summary>
+        <p class="job-description"></p>
+      </details>
+    </article>
+  </template>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

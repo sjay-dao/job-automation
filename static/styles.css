@@ -158,6 +158,10 @@ summary {
   gap: 8px;
 }
 
+.control-wide {
+  grid-column: 1 / -1;
+}
+
 .control span {
   font-size: 0.9rem;
   font-weight: 700;
@@ -171,6 +175,16 @@ summary {
   border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.9);
   font: inherit;
+}
+
+.quick-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.quick-date-btn {
+  padding: 11px 14px;
 }
 
 .summary-grid {

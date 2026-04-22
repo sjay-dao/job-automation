@@ -1,31 +1,18 @@
 {
   "job_titles": [
-    "Software Engineer",
-    "Backend Developer",
-    "Full Stack Developer",
-    "Web Developer",
-    "PHP Developer",
-    "Java Developer",
-    "Node.js Developer",
-    "C# Developer",
-    "Data Analyst",
-    "DBA",
-    "DevOps Engineer",
-    "Cloud Engineer",
-    "IT Support Specialist",
-    "Frontend Developer"
+    "Software Engineer"
   ],
   "location": "Philippines",
   "date_posted": "today",
-  "max_job_age_days": 3,
+  "max_job_age_days": 1,
   "source_name": "LinkedIn",
   "max_applicants": null,
-  "max_jobs_per_keyword": 250,
+  "max_jobs_per_keyword": 150,
   "jobstreet_login_timeout_seconds": 240,
   "indeed_verification_timeout_seconds": 240,
   "job_sources": {
     "linkedin": {
-      "enabled": true,
+      "enabled": false,
       "source_name": "LinkedIn",
       "login_url": "https://www.linkedin.com/login",
       "jobs_url": "https://www.linkedin.com/jobs/"
@@ -43,8 +30,8 @@
   },
   "browser": {
     "headless": false,
-    "user_data_dir": ".\\.chrome-jobstreet-profile",
-    "profile_directory": "Default"
+    "user_data_dir": "",
+    "profile_directory": ""
   },
   "scraping": {
     "scroll_pause_seconds": 1.1,
@@ -93,97 +80,163 @@
       "Java": {
         "years": 4.0,
         "category": "Programming Languages",
-        "aliases": ["java", "core java"]
+        "aliases": [
+          "java",
+          "core java"
+        ]
       },
       "JavaScript": {
         "years": 4.0,
         "category": "Programming Languages",
-        "aliases": ["javascript", "js", "ecmascript"]
+        "aliases": [
+          "javascript",
+          "js",
+          "ecmascript"
+        ]
       },
       "SQL/PL-SQL": {
         "years": 4.0,
         "category": "Databases",
-        "aliases": ["sql", "pl/sql", "plsql", "stored procedures"]
+        "aliases": [
+          "sql",
+          "pl/sql",
+          "plsql",
+          "stored procedures"
+        ]
       },
       "PHP": {
         "years": 2.0,
         "category": "Programming Languages",
-        "aliases": ["php"]
+        "aliases": [
+          "php"
+        ]
       },
       "C#": {
         "years": 1.0,
         "category": "Programming Languages",
-        "aliases": ["c#", ".net", "asp.net"]
+        "aliases": [
+          "c#",
+          ".net",
+          "asp.net"
+        ]
       },
       "Spring Boot": {
         "years": 2.0,
         "category": "Web Development",
-        "aliases": ["spring boot", "spring"]
+        "aliases": [
+          "spring boot",
+          "spring"
+        ]
       },
       "React.js": {
         "years": 2.0,
         "category": "Web Development",
-        "aliases": ["react", "react.js"]
+        "aliases": [
+          "react",
+          "react.js"
+        ]
       },
       "Node.js/Express": {
         "years": 1.5,
         "category": "Web Development",
-        "aliases": ["node.js", "nodejs", "express", "express.js"]
+        "aliases": [
+          "node.js",
+          "nodejs",
+          "express",
+          "express.js"
+        ]
       },
       "Laravel": {
         "years": 1.0,
         "category": "Web Development",
-        "aliases": ["laravel"]
+        "aliases": [
+          "laravel"
+        ]
       },
       "Oracle DB": {
         "years": 3.0,
         "category": "Databases",
-        "aliases": ["oracle db", "oracle database", "oracle"]
+        "aliases": [
+          "oracle db",
+          "oracle database",
+          "oracle"
+        ]
       },
       "MySQL": {
         "years": 2.0,
         "category": "Databases",
-        "aliases": ["mysql"]
+        "aliases": [
+          "mysql"
+        ]
       },
       "PostgreSQL": {
         "years": 1.0,
         "category": "Databases",
-        "aliases": ["postgresql", "postgres"]
+        "aliases": [
+          "postgresql",
+          "postgres"
+        ]
       },
       "MongoDB": {
         "years": 1.0,
         "category": "Databases",
-        "aliases": ["mongodb", "mongo"]
+        "aliases": [
+          "mongodb",
+          "mongo"
+        ]
       },
       "REST APIs": {
         "years": 4.0,
         "category": "Web Development",
-        "aliases": ["rest api", "restful api", "api integration", "rest"]
+        "aliases": [
+          "rest api",
+          "restful api",
+          "api integration",
+          "rest"
+        ]
       },
       "System Integration": {
         "years": 3.0,
         "category": "Methodologies",
-        "aliases": ["system integration", "integration", "third-party integration"]
+        "aliases": [
+          "system integration",
+          "integration",
+          "third-party integration"
+        ]
       },
       "Git/GitHub": {
         "years": 3.0,
         "category": "Other",
-        "aliases": ["git", "github", "gitlab"]
+        "aliases": [
+          "git",
+          "github",
+          "gitlab"
+        ]
       },
       "Docker": {
         "years": 1.0,
         "category": "Cloud & DevOps",
-        "aliases": ["docker", "containerization"]
+        "aliases": [
+          "docker",
+          "containerization"
+        ]
       },
       "Google Cloud": {
         "years": 1.0,
         "category": "Cloud & DevOps",
-        "aliases": ["google cloud", "gcp"]
+        "aliases": [
+          "google cloud",
+          "gcp"
+        ]
       },
       "Selenium Automation": {
         "years": 1.0,
         "category": "Other",
-        "aliases": ["selenium", "test automation", "automation testing"]
+        "aliases": [
+          "selenium",
+          "test automation",
+          "automation testing"
+        ]
       }
     }
   },

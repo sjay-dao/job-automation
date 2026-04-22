@@ -114,12 +114,12 @@ def parse_job_age_days(text: str) -> int | None:
         return 1
 
     patterns: list[tuple[str, int]] = [
-        (r"(\d+)\s*(?:\+?\s*)?(?:minute|minutes|min|mins)\b", 0),
-        (r"(\d+)\s*(?:\+?\s*)?(?:hour|hours|hr|hrs)\b", 0),
-        (r"(\d+)\s*(?:\+?\s*)?(?:day|days)\b", 1),
-        (r"(\d+)\s*(?:\+?\s*)?(?:week|weeks)\b", 7),
-        (r"(\d+)\s*(?:\+?\s*)?(?:month|months)\b", 30),
-        (r"(\d+)\s*(?:\+?\s*)?(?:year|years)\b", 365),
+        (r"(\d+)\s*(?:\+?\s*)?(?:m|min|mins|minute|minutes)\b", 0),
+        (r"(\d+)\s*(?:\+?\s*)?(?:h|hr|hrs|hour|hours)\b", 0),
+        (r"(\d+)\s*(?:\+?\s*)?(?:d|day|days)\b", 1),
+        (r"(\d+)\s*(?:\+?\s*)?(?:w|week|weeks)\b", 7),
+        (r"(\d+)\s*(?:\+?\s*)?(?:mo|month|months)\b", 30),
+        (r"(\d+)\s*(?:\+?\s*)?(?:y|yr|yrs|year|years)\b", 365),
     ]
 
     for pattern, multiplier in patterns:

@@ -4,6 +4,8 @@ import csv
 import json
 from pathlib import Path
 
+from parser import parse_job_posted_date
+
 
 CSV_COLUMNS = [
     "job_uid",
@@ -46,6 +48,13 @@ def get_row_key(row: dict[str, object]) -> str:
     return str(row.get("job_uid") or build_job_uid(row)).strip()
 
 
+def normalize_row_dates(row: dict[str, object]) -> dict[str, object]:
+    normalized = {**row}
+    if not normalized.get("posted_date"):
+        normalized["posted_date"] = parse_job_posted_date(str(normalized.get("date_posted", "")))
+    return normalized
+
+
 def load_seen_jobs(path: Path) -> set[str]:
     if not path.exists():
         return set()
@@ -86,12 +95,14 @@ def upsert_rows(csv_path: Path, new_rows: list[dict[str, object]]) -> None:
     keyed_rows: dict[str, dict[str, object]] = {}
 
     for row in existing_rows:
+        row = normalize_row_dates(row)
         row_key = get_row_key(row)
         if row_key:
             keyed_rows[row_key] = row
 
     for row in new_rows:
         row = {**row}
+        row = normalize_row_dates(row)
         row_key = get_row_key(row)
         if row_key:
             row["job_uid"] = row_key
@@ -135,12 +146,14 @@ def update_row(csv_path: Path, job_key: str, updates: dict[str, object]) -> bool
     existing_rows = read_existing_rows(csv_path)
     updated = False
 
-    for row in existing_rows:
+    for index, row in enumerate(existing_rows):
+        row = normalize_row_dates(row)
         row_key = get_row_key(row)
         if row_key and row_key == str(job_key):
             row.update({key: value for key, value in updates.items() if value is not None})
             if not row.get("job_uid"):
                 row["job_uid"] = row_key
+            existing_rows[index] = row
             updated = True
             break
 

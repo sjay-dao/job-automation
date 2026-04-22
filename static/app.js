@@ -30,6 +30,10 @@ function normalizeScore(value) {
   return Number.isNaN(parsed) ? 0 : parsed;
 }
 
+function getTodayIsoDate() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 function getMatchScore(job) {
   return normalizeScore(job.match_score ?? job.score);
 }
@@ -155,6 +159,35 @@ function matchesDateRange(job) {
   }
 
   return true;
+}
+
+function setDateRange(fromValue, toValue) {
+  elements.postedFromInput.value = fromValue || "";
+  elements.postedToInput.value = toValue || "";
+  filterJobs();
+}
+
+function applyDatePreset(rangeKey) {
+  const today = getTodayIsoDate();
+  if (rangeKey === "today") {
+    setDateRange(today, today);
+    return;
+  }
+  if (rangeKey === "3days") {
+    const from = new Date();
+    from.setDate(from.getDate() - 2);
+    setDateRange(from.toISOString().slice(0, 10), today);
+    return;
+  }
+  if (rangeKey === "7days") {
+    const from = new Date();
+    from.setDate(from.getDate() - 6);
+    setDateRange(from.toISOString().slice(0, 10), today);
+    return;
+  }
+  if (rangeKey === "all") {
+    setDateRange("", "");
+  }
 }
 
 function filterJobs() {
@@ -377,6 +410,14 @@ elements.sourceFilter.addEventListener("change", filterJobs);
 elements.statusFilter.addEventListener("change", filterJobs);
 elements.postedFromInput.addEventListener("change", filterJobs);
 elements.postedToInput.addEventListener("change", filterJobs);
+document.querySelectorAll(".quick-date-btn").forEach((button) => {
+  button.addEventListener("click", () => {
+    applyDatePreset(button.dataset.range || "today");
+  });
+});
+
+elements.postedFromInput.value = getTodayIsoDate();
+elements.postedToInput.value = getTodayIsoDate();
 
 loadJobs().catch((error) => {
   elements.statusText.textContent = "Failed to load jobs";

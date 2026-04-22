@@ -43,6 +43,11 @@ def build_driver(settings: dict) -> webdriver.Chrome:
     user_data_dir = str(browser_settings.get("user_data_dir", "") or "").strip()
     profile_directory = str(browser_settings.get("profile_directory", "") or "").strip()
     if user_data_dir:
+        user_data_path = Path(user_data_dir)
+        if not user_data_path.is_absolute():
+            user_data_path = (BASE_DIR / user_data_path).resolve()
+        user_data_path.mkdir(parents=True, exist_ok=True)
+        user_data_dir = str(user_data_path)
         options.add_argument(f"--user-data-dir={user_data_dir}")
     if profile_directory:
         options.add_argument(f"--profile-directory={profile_directory}")
@@ -50,7 +55,10 @@ def build_driver(settings: dict) -> webdriver.Chrome:
         options.add_argument("--headless=new")
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option("useAutomationExtension", False)
-    return webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(options=options)
+    driver.set_page_load_timeout(45)
+    driver.set_script_timeout(30)
+    return driver
 
 
 def process_keyword(

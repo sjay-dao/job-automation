@@ -268,12 +268,34 @@ DEFAULT_SCORING_RULES = {
     },
 }
 
+DEFAULT_JOB_SOURCES = {
+    "linkedin": {
+        "enabled": True,
+        "source_name": "LinkedIn",
+        "login_url": "https://www.linkedin.com/login",
+        "jobs_url": "https://www.linkedin.com/jobs/",
+    },
+    "jobstreet": {
+        "enabled": True,
+        "source_name": "JobStreet",
+        "jobs_url_base": "https://ph.jobstreet.com",
+    },
+    "indeed": {
+        "enabled": True,
+        "source_name": "Indeed",
+        "jobs_url_base": "https://www.indeed.com/jobs",
+    },
+}
+
 DEFAULT_CONFIG: dict[str, Any] = {
     "job_titles": DEFAULT_JOB_TITLES,
     "location": "Philippines",
     "date_posted": "today",
+    "max_job_age_days": 3,
+    "source_name": "LinkedIn",
     "max_applicants": None,
     "max_jobs_per_keyword": 250,
+    "job_sources": DEFAULT_JOB_SOURCES,
     "browser": {
         "headless": False,
     },

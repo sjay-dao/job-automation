@@ -25,6 +25,8 @@
       <div class="hero-actions">
         <button id="runBtn" class="primary-btn">Run Scraper</button>
         <button id="refreshBtn" class="ghost-btn">Refresh Jobs</button>
+        <a class="ghost-btn" href="/static/code-map.html">Code Map</a>
+        <a class="ghost-btn" href="/static/docs/index.html">Docs Hub</a>
         <div class="status-card">
           <span class="status-label">Status</span>
           <strong id="statusText">Idle</strong>
@@ -46,10 +48,39 @@
         <span>Sort by</span>
         <select id="sortSelect">
           <option value="score">Highest match score</option>
-          <option value="date_posted">Newest label</option>
+          <option value="posted_date">Portal posted date</option>
+          <option value="last_updated">Recently updated</option>
           <option value="company">Company</option>
           <option value="title">Title</option>
         </select>
+      </label>
+      <label class="control">
+        <span>Source</span>
+        <select id="sourceFilter">
+          <option value="all">All sources</option>
+          <option value="LinkedIn">LinkedIn</option>
+          <option value="JobStreet">JobStreet</option>
+          <option value="Indeed">Indeed</option>
+        </select>
+      </label>
+      <label class="control">
+        <span>Status</span>
+        <select id="statusFilter">
+          <option value="all">All statuses</option>
+          <option value="New">New</option>
+          <option value="Viewed">Viewed</option>
+          <option value="Applied">Applied</option>
+          <option value="For interview">For interview</option>
+          <option value="Rejected">Rejected</option>
+        </select>
+      </label>
+      <label class="control">
+        <span>Posted from</span>
+        <input id="postedFromInput" type="date">
+      </label>
+      <label class="control">
+        <span>Posted to</span>
+        <input id="postedToInput" type="date">
       </label>
     </section>
 
@@ -57,6 +88,10 @@
       <article class="summary-card">
         <span>Total jobs</span>
         <strong id="totalJobs">0</strong>
+      </article>
+      <article class="summary-card">
+        <span>Status mix</span>
+        <strong id="statusBreakdown">-</strong>
       </article>
       <article class="summary-card">
         <span>Average match score</span>
@@ -85,9 +120,14 @@
           <p class="job-score"></p>
           <h3 class="job-title"></h3>
           <p class="job-company"></p>
-          <p class="job-status"></p>
         </div>
-        <a class="job-link" target="_blank" rel="noopener noreferrer">Open Listing</a>
+        <div class="job-card-actions">
+          <a class="job-link" target="_blank" rel="noopener noreferrer">Open Listing</a>
+          <label class="job-status-control">
+            <span>Status</span>
+            <select class="job-status-select"></select>
+          </label>
+        </div>
       </div>
       <div class="job-meta"></div>
       <p class="job-breakdown"></p>

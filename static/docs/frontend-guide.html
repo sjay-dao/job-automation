@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frontend Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body { margin:0; font-family:"Space Grotesk",sans-serif; background:#f8f4ed; color:#1f1a16; }
+    .shell { width:min(1100px, calc(100% - 32px)); margin:0 auto; padding:32px 0 56px; }
+    .panel { background:rgba(255,250,243,.92); border:1px solid rgba(44,34,22,.12); border-radius:24px; padding:24px; box-shadow:0 20px 60px rgba(48,33,10,.12); }
+    .eyebrow { text-transform:uppercase; letter-spacing:.18em; font-size:.75rem; color:#0f766e; margin:0 0 10px; }
+    h1, h2, h3 { margin-top:0; }
+    p, li { line-height:1.6; color:#675d55; }
+    .meta { font-family:"IBM Plex Mono",monospace; font-size:.85rem; background:rgba(15,118,110,.06); border-radius:14px; padding:12px 14px; color:#1f1a16; }
+    .grid { display:grid; gap:16px; margin-top:18px; }
+    .buttons { display:flex; flex-wrap:wrap; gap:12px; margin-top:16px; }
+    .button { display:inline-flex; padding:12px 18px; border-radius:999px; text-decoration:none; background:#fffaf2; border:1px solid rgba(44,34,22,.12); color:#1f1a16; }
+    .button.primary { background:linear-gradient(135deg,#0f766e,#115e59); color:white; border-color:transparent; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="panel">
+      <p class="eyebrow">Knowledge Transfer</p>
+      <h1>Frontend Guide</h1>
+      <p>This page is the UI map: where the jobs are rendered, filtered, and updated from the browser.</p>
+      <div class="buttons">
+        <a class="button primary" href="/static/docs/index.html">Docs Hub</a>
+        <a class="button" href="/static/code-map.html">Code Map</a>
+      </div>
+      <div class="grid">
+        <div>
+          <h2>What to Review</h2>
+          <ul>
+            <li><code>static/index.html</code> defines the dashboard layout and all controls.</li>
+            <li><code>static/app.js</code> loads jobs, filters them, sorts them, and updates statuses.</li>
+            <li><code>static/styles.css</code> handles the visual system and responsive layout.</li>
+          </ul>
+        </div>
+        <div>
+          <h2>Important UI Behaviors</h2>
+          <ul>
+            <li>Search is text-based across title, company, description, score data, status, source, and dates.</li>
+            <li>Status updates are persisted back to the CSV through the API.</li>
+            <li>The dashboard can filter by source, status, and portal posted date range.</li>
+            <li>Cards show the current source, portal date, and last update time.</li>
+          </ul>
+        </div>
+        <div>
+          <h2>Search Terms</h2>
+          <div class="meta">filter | render | card | status dropdown | source filter | posted date | last_updated</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

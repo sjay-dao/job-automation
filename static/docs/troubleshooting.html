@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Troubleshooting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body { margin:0; font-family:"Space Grotesk",sans-serif; background:#f8f4ed; color:#1f1a16; }
+    .shell { width:min(1100px, calc(100% - 32px)); margin:0 auto; padding:32px 0 56px; }
+    .panel { background:rgba(255,250,243,.92); border:1px solid rgba(44,34,22,.12); border-radius:24px; padding:24px; box-shadow:0 20px 60px rgba(48,33,10,.12); }
+    .eyebrow { text-transform:uppercase; letter-spacing:.18em; font-size:.75rem; color:#0f766e; margin:0 0 10px; }
+    h1, h2, h3 { margin-top:0; }
+    p, li { line-height:1.6; color:#675d55; }
+    .meta { font-family:"IBM Plex Mono",monospace; font-size:.85rem; background:rgba(15,118,110,.06); border-radius:14px; padding:12px 14px; color:#1f1a16; }
+    .grid { display:grid; gap:16px; margin-top:18px; }
+    .buttons { display:flex; flex-wrap:wrap; gap:12px; margin-top:16px; }
+    .button { display:inline-flex; padding:12px 18px; border-radius:999px; text-decoration:none; background:#fffaf2; border:1px solid rgba(44,34,22,.12); color:#1f1a16; }
+    .button.primary { background:linear-gradient(135deg,#0f766e,#115e59); color:white; border-color:transparent; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="panel">
+      <p class="eyebrow">Knowledge Transfer</p>
+      <h1>Troubleshooting</h1>
+      <p>Use this when the app stops loading jobs, duplicates reappear, or the browser UI behaves oddly.</p>
+      <div class="buttons">
+        <a class="button primary" href="/static/docs/index.html">Docs Hub</a>
+        <a class="button" href="/static/code-map.html">Code Map</a>
+      </div>
+      <div class="grid">
+        <div>
+          <h2>If duplicate jobs show up</h2>
+          <ul>
+            <li>Check <code>jobs_seen.json</code>.</li>
+            <li>Inspect <code>csv_writer.py -> upsert_rows()</code>.</li>
+            <li>Check <code>main.py</code> to confirm the same seen set is reused across keywords.</li>
+          </ul>
+        </div>
+        <div>
+          <h2>If LinkedIn stops loading jobs</h2>
+          <ul>
+            <li>Inspect <code>login.py</code> for session/login issues.</li>
+            <li>Inspect <code>job_search.py -> open_search_results()</code> and <code>iter_job_cards()</code>.</li>
+            <li>Look at <code>scroll_handler.py</code> if the page layout changed.</li>
+          </ul>
+        </div>
+        <div>
+          <h2>If the dashboard looks wrong</h2>
+          <ul>
+            <li>Check <code>backend-api.py -> /api/jobs</code>.</li>
+            <li>Check <code>static/app.js</code> for filter or render logic.</li>
+            <li>Check <code>static/index.html</code> for missing controls or IDs.</li>
+          </ul>
+        </div>
+        <div>
+          <h2>Search Terms</h2>
+          <div class="meta">stale element | empty results | duplicate | session | render | fetch | csv</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

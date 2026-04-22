@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#f3efe8; --panel:rgba(255,250,243,.9); --text:#1f1a16; --muted:#675d55; --accent:#0f766e; --border:rgba(44,34,22,.12); --shadow:0 20px 60px rgba(48,33,10,.12); }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:"Space Grotesk",sans-serif; color:var(--text); background:linear-gradient(180deg,#f8f4ed 0%,var(--bg) 100%); }
+    .shell { width:min(1100px,calc(100% - 32px)); margin:0 auto; padding:32px 0 56px; }
+    .hero,.grid,.card { background:var(--panel); border:1px solid var(--border); box-shadow:var(--shadow); backdrop-filter:blur(14px); }
+    .hero { border-radius:28px; padding:28px; }
+    .eyebrow { margin:0 0 10px; text-transform:uppercase; letter-spacing:.18em; font-size:.75rem; color:var(--accent); }
+    h1 { margin:0; line-height:1; font-size:clamp(2rem,4vw,3.6rem); max-width:14ch; }
+    .subcopy { margin:12px 0 0; max-width:72ch; color:var(--muted); line-height:1.6; }
+    .actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:18px; }
+    .button { display:inline-flex; align-items:center; justify-content:center; padding:12px 18px; border-radius:999px; text-decoration:none; border:1px solid var(--border); color:var(--text); background:#fffaf2; }
+    .button.primary { background:linear-gradient(135deg,var(--accent),#115e59); color:#fff; border-color:transparent; }
+    .search { margin-top:24px; padding:18px; border-radius:22px; }
+    .search label { display:block; font-weight:700; margin-bottom:8px; }
+    .search input { width:100%; padding:14px 16px; border-radius:16px; border:1px solid var(--border); font:inherit; }
+    .grid { margin-top:24px; border-radius:24px; padding:20px; }
+    .grid h2 { margin:0; }
+    .grid-head { display:flex; justify-content:space-between; gap:16px; align-items:end; margin-bottom:16px; }
+    .cards { display:grid; gap:16px; }
+    .card { border-radius:22px; padding:18px; }
+    .card h3 { margin:0 0 8px; }
+    .meta { margin:0; color:var(--muted); line-height:1.6; white-space:pre-line; }
+    .tags { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 12px; }
+    .tag { font-family:"IBM Plex Mono",monospace; font-size:.78rem; padding:6px 10px; border-radius:999px; background:rgba(217,119,6,.08); color:#d97706; }
+    .empty { display:none; padding:18px; border-radius:18px; margin-top:16px; border:1px dashed rgba(15,118,110,.22); color:var(--muted); }
+    .empty.show { display:block; }
+    @media (max-width:700px) { .hero,.grid { padding:18px; } .grid-head { flex-direction:column; align-items:start; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <p class="eyebrow">Documentation Hub</p>
+      <h1>Everything you need to understand and maintain the scraper.</h1>
+      <p class="subcopy">Yes, this documentation is meant to help a developer study the system, debug issues, and enhance it later even without Codex. Use it when you want to review one concept at a time without reopening the codebase blindly.</p>
+      <div class="actions">
+        <a class="button primary" href="/static/index.html">Back to Dashboard</a>
+        <a class="button" href="/static/code-map.html">Open Code Map</a>
+      </div>
+    </section>
+
+    <section class="search">
+      <label for="searchInput">Search documentation</label>
+      <input id="searchInput" type="search" placeholder="Try: duplicates, status, posted date, scoring, login, frontend, sources">
+    </section>
+
+    <section class="grid">
+      <div class="grid-head">
+        <div>
+          <h2>Pages</h2>
+          <p class="subcopy" style="margin:6px 0 0;">Each page is a focused knowledge-transfer slice with direct code anchors.</p>
+        </div>
+        <p id="resultCount">0 matches</p>
+      </div>
+      <div id="cards" class="cards"></div>
+      <div id="empty" class="empty">No documentation page matches that search.</div>
+    </section>
+  </div>
+
+  <script>
+    const docs = [
+      { title: "Developer Handoff", href: "/static/docs/developer-handoff.html", tags: ["study", "debug", "enhance", "handoff", "onboarding"], summary: "Answers whether the docs are enough for a developer to understand, troubleshoot, and extend the system." },
+      { title: "System Overview", href: "/static/docs/system-overview.html", tags: ["architecture", "modules", "entry points", "workflow"], summary: "High-level map of how the app starts, scrapes, scores, and serves data." },
+      { title: "Data Model and Storage", href: "/static/docs/data-model.html", tags: ["csv", "status", "posted date", "source", "last_updated"], summary: "Explains the columns in the CSV, how dedupe works, and what is persisted between runs." },
+      { title: "Scraping Workflow", href: "/static/docs/scraping-workflow.html", tags: ["pagination", "scrolling", "linkedin", "login", "details panel"], summary: "Covers the LinkedIn scraping loop from login to card extraction and filtering." },
+      { title: "Frontend Guide", href: "/static/docs/frontend-guide.html", tags: ["ui", "filters", "cards", "status dropdown", "sorting"], summary: "Shows where the dashboard renders jobs, filters them, and updates status." },
+      { title: "Scoring Guide", href: "/static/docs/scoring-guide.html", tags: ["score", "match score", "resume profile", "keywords"], summary: "Explains how job text becomes a score and where to tune the ranking rules." },
+      { title: "Source Expansion", href: "/static/docs/source-expansion.html", tags: ["jobstreet", "indeed", "source_name", "adapters"], summary: "Prep notes for adding JobStreet, Indeed, and other direct sources later." },
+      { title: "Troubleshooting", href: "/static/docs/troubleshooting.html", tags: ["duplicates", "login", "stale element", "empty results"], summary: "Use this when the scraper or UI behaves unexpectedly." },
+      { title: "Code Map", href: "/static/code-map.html", tags: ["search", "files", "functions", "exact locations"], summary: "Searchable index that points to exact files and functions by concept." }
+    ];
+
+    const searchInput = document.getElementById("searchInput");
+    const cards = document.getElementById("cards");
+    const resultCount = document.getElementById("resultCount");
+    const empty = document.getElementById("empty");
+
+    function render(query = "") {
+      const needle = String(query || "").toLowerCase().trim();
+      const visible = docs.filter((doc) => {
+        if (!needle) return true;
+        return [doc.title, doc.summary, doc.href, ...doc.tags].join(" ").toLowerCase().includes(needle);
+      });
+
+      cards.innerHTML = "";
+      resultCount.textContent = `${visible.length} match${visible.length === 1 ? "" : "es"}`;
+      empty.classList.toggle("show", visible.length === 0);
+
+      for (const doc of visible) {
+        const el = document.createElement("article");
+        el.className = "card";
+        el.innerHTML = `
+          <h3><a href="${doc.href}">${doc.title}</a></h3>
+          <p class="subcopy" style="margin:0;">${doc.summary}</p>
+          <div class="tags">${doc.tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}</div>
+          <p class="meta">${doc.href}</p>
+        `;
+        cards.appendChild(el);
+      }
+    }
+
+    searchInput.addEventListener("input", () => render(searchInput.value));
+    render();
+  </script>
+</body>
+</html>

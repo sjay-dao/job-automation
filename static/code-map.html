@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Map</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f3efe8;
+      --panel: rgba(255, 250, 243, 0.9);
+      --panel-strong: #fffaf2;
+      --text: #1f1a16;
+      --muted: #675d55;
+      --accent: #0f766e;
+      --accent-2: #d97706;
+      --border: rgba(44, 34, 22, 0.12);
+      --shadow: 0 20px 60px rgba(48, 33, 10, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Space Grotesk", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(217, 119, 6, 0.14), transparent 28%),
+        radial-gradient(circle at top right, rgba(15, 118, 110, 0.18), transparent 25%),
+        linear-gradient(180deg, #f8f4ed 0%, var(--bg) 100%);
+    }
+
+    .page-shell {
+      width: min(1200px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 56px;
+    }
+
+    .hero,
+    .search-bar,
+    .card,
+    .section {
+      backdrop-filter: blur(14px);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      display: grid;
+      gap: 20px;
+      border-radius: 28px;
+      padding: 28px;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 0.75rem;
+      color: var(--accent);
+    }
+
+    h1 {
+      margin: 0;
+      line-height: 1;
+      font-size: clamp(2rem, 4vw, 3.8rem);
+      max-width: 16ch;
+    }
+
+    .subcopy {
+      margin: 10px 0 0;
+      max-width: 70ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+      line-height: 1.6;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 12px 18px;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      font: inherit;
+      color: var(--text);
+      background: var(--panel-strong);
+      transition: transform 150ms ease;
+    }
+
+    .button.primary {
+      background: linear-gradient(135deg, var(--accent), #115e59);
+      color: white;
+      border-color: transparent;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .search-bar {
+      display: grid;
+      gap: 10px;
+      margin-top: 24px;
+      padding: 18px;
+      border-radius: 22px;
+    }
+
+    .search-bar label {
+      font-weight: 700;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.92);
+      font: inherit;
+    }
+
+    .quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 118, 110, 0.18);
+      background: rgba(15, 118, 110, 0.06);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    .section {
+      margin-top: 24px;
+      border-radius: 24px;
+      padding: 20px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: end;
+      margin-bottom: 16px;
+    }
+
+    .section-header h2 {
+      margin: 0;
+    }
+
+    .section-header p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .cards {
+      display: grid;
+      gap: 16px;
+    }
+
+    .card {
+      border-radius: 22px;
+      padding: 18px;
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 1.15rem;
+    }
+
+    .keywords {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 12px;
+    }
+
+    .keyword {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.78rem;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(217, 119, 6, 0.08);
+      color: var(--accent-2);
+    }
+
+    .location {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
+    .location code {
+      font-family: "IBM Plex Mono", monospace;
+      background: rgba(31, 26, 22, 0.06);
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .empty-state {
+      padding: 24px;
+      border-radius: 18px;
+      background: rgba(255, 250, 243, 0.72);
+      border: 1px dashed rgba(15, 118, 110, 0.22);
+      color: var(--muted);
+    }
+
+    @media (max-width: 700px) {
+      .hero,
+      .section {
+        padding: 18px;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Searchable Code Map</p>
+        <h1>Search the system by concept and jump to the exact code to review.</h1>
+        <p class="subcopy">
+          This page is for future you. Type a term like <strong>duplicates</strong>, <strong>posted date</strong>,
+          <strong>status</strong>, or <strong>pagination</strong>, and it will show the files and functions that control that behavior.
+        </p>
+      </div>
+      <div class="hero-actions">
+        <a class="button primary" href="/static/index.html">Back to Dashboard</a>
+        <a class="button" href="/api/jobs">Open Jobs JSON</a>
+      </div>
+    </header>
+
+    <section class="search-bar" aria-label="Search the code map">
+      <label for="searchInput">Search keyword</label>
+      <input id="searchInput" type="search" placeholder="Try: duplicates, pagination, status, source, scoring, login, posted date">
+      <div class="quick-links" aria-label="Quick search shortcuts">
+        <a class="chip" href="#duplicates">Duplicates</a>
+        <a class="chip" href="#pagination">Pagination</a>
+        <a class="chip" href="#status">Status</a>
+        <a class="chip" href="#posted-date">Posted date</a>
+        <a class="chip" href="#scoring">Scoring</a>
+        <a class="chip" href="#frontend">Frontend</a>
+        <a class="chip" href="#future-sources">Future sources</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <div>
+          <h2>Keyword Index</h2>
+          <p>Each card tells you what to inspect and where the logic lives.</p>
+        </div>
+        <p id="resultCount">0 matches</p>
+      </div>
+      <div id="cards" class="cards"></div>
+      <div id="emptyState" class="empty-state hidden">No matches for that search term.</div>
+    </section>
+  </div>
+
+  <script>
+    const entries = [
+      {
+        id: "duplicates",
+        title: "Duplicates",
+        keywords: ["duplicates", "dedupe", "seen", "repeat", "upsert"],
+        summary: "This is where the scraper avoids storing the same job more than once.",
+        location: [
+          "csv_writer.py -> upsert_rows() and update_row()",
+          "main.py -> run() passes the persisted seen-job set across keywords",
+          "job_search.py -> collect_jobs_for_keyword() and local_seen_ids",
+          "jobs_seen.json -> persisted job IDs between runs",
+        ],
+      },
+      {
+        id: "pagination",
+        title: "Pagination / Scrolling",
+        keywords: ["pagination", "scroll", "next page", "load more", "results list"],
+        summary: "LinkedIn scraping is scroll-based. There is no click-next-page logic yet.",
+        location: [
+          "job_search.py -> iter_job_cards()",
+          "scroll_handler.py -> find_scroll_container() and scroll_until_stable()",
+          "job_search.py -> open_search_results() loads the search results URL",
+        ],
+      },
+      {
+        id: "status",
+        title: "Status Tracking",
+        keywords: ["status", "viewed", "applied", "interview", "rejected"],
+        summary: "Manual and automatic job status handling lives here.",
+        location: [
+          "backend-api.py -> update_job_status()",
+          "csv_writer.py -> update_row() persists status changes",
+          "static/app.js -> applyJobStatus(), saveJobStatus(), bindStatusSelect()",
+          "static/index.html -> status dropdown and status filter controls",
+        ],
+      },
+      {
+        id: "posted-date",
+        title: "Posted Date",
+        keywords: ["posted date", "date posted", "freshness", "3 days", "portal date"],
+        summary: "This is the portal date, not the scrape date.",
+        location: [
+          "parser.py -> parse_job_age_days() and parse_job_posted_date()",
+          "job_search.py -> collect_jobs_for_keyword() filters old listings",
+          "backend-api.py -> normalize_job_row() fills posted_date for old rows",
+          "static/app.js -> matchesDateRange() and sort by posted_date",
+        ],
+      },
+      {
+        id: "scoring",
+        title: "Scoring / Ranking",
+        keywords: ["score", "match score", "ranking", "keywords", "resume"],
+        summary: "The ranking logic turns job text into a score based on your profile.",
+        location: [
+          "scorer.py -> score_job()",
+          "config.py -> DEFAULT_SCORING_RULES and DEFAULT_RESUME_PROFILE",
+          "main.py -> process_keyword() attaches scores before writing rows",
+          "static/app.js -> sort and filter controls use match_score",
+        ],
+      },
+      {
+        id: "frontend",
+        title: "Frontend Dashboard",
+        keywords: ["frontend", "ui", "dashboard", "filters", "cards"],
+        summary: "The browser UI that renders jobs and lets you update status.",
+        location: [
+          "static/index.html -> layout and controls",
+          "static/app.js -> filtering, sorting, rendering, status updates",
+          "static/styles.css -> visual design and responsive layout",
+        ],
+      },
+      {
+        id: "login",
+        title: "Login / Session",
+        keywords: ["login", "session", "linkedin login", "authentication"],
+        summary: "If the scraper starts failing before jobs load, inspect session handling first.",
+        location: [
+          "login.py -> login_to_linkedin()",
+          "main.py -> run() calls login_to_linkedin() before scraping",
+        ],
+      },
+      {
+        id: "source",
+        title: "Source Column",
+        keywords: ["source", "linkedin", "jobstreet", "indeed"],
+        summary: "This field is what will let the same table store multiple job sites cleanly.",
+        location: [
+          "csv_writer.py -> CSV_COLUMNS and source fallback",
+          "backend-api.py -> normalize_job_row() adds source defaults",
+          "job_search.py -> snapshot['source'] is set from config",
+          "config.py / config.json -> source_name",
+        ],
+      },
+      {
+        id: "future-sources",
+        title: "Future Sources",
+        keywords: ["jobstreet", "indeed", "adapter", "site-specific", "source_name"],
+        summary: "This is the extension point for adding JobStreet and Indeed later.",
+        location: [
+          "config.py -> source_name and site settings",
+          "job_search.py -> current LinkedIn implementation can be mirrored per source",
+          "backend-api.py -> source-agnostic job loading and updates",
+          "static/app.js -> source filter already exists",
+        ],
+      },
+      {
+        id: "csv",
+        title: "CSV Storage",
+        keywords: ["csv", "export", "storage", "rows"],
+        summary: "Read/write logic for the current table and persisted job state.",
+        location: [
+          "csv_writer.py -> read_existing_rows(), upsert_rows(), update_row()",
+          "backend-api.py -> /api/jobs loads CSV rows for the dashboard",
+          "main.py -> run() writes results to linkedin_jobs.csv",
+        ],
+      },
+      {
+        id: "config",
+        title: "Configuration",
+        keywords: ["config", "settings", "json", "env", "jobs_seen"],
+        summary: "If you want to change defaults, thresholds, or search scope, start here.",
+        location: [
+          "config.py -> DEFAULT_CONFIG, load_settings()",
+          "config.json -> your current runtime values",
+          ".env -> LinkedIn login credentials",
+        ],
+      },
+    ];
+
+    const searchInput = document.getElementById("searchInput");
+    const cards = document.getElementById("cards");
+    const emptyState = document.getElementById("emptyState");
+    const resultCount = document.getElementById("resultCount");
+
+    function normalize(text) {
+      return String(text || "").toLowerCase().trim();
+    }
+
+    function matchesEntry(entry, query) {
+      if (!query) {
+        return true;
+      }
+
+      const haystack = [entry.title, entry.summary, ...entry.keywords, ...entry.location].join(" ").toLowerCase();
+      return haystack.includes(query);
+    }
+
+    function render(query = "") {
+      const normalizedQuery = normalize(query);
+      const visible = entries.filter((entry) => matchesEntry(entry, normalizedQuery));
+
+      cards.innerHTML = "";
+      resultCount.textContent = `${visible.length} match${visible.length === 1 ? "" : "es"}`;
+      emptyState.classList.toggle("hidden", visible.length > 0);
+
+      for (const entry of visible) {
+        const card = document.createElement("article");
+        card.className = "card";
+        card.id = entry.id;
+        card.innerHTML = `
+          <h3>${entry.title}</h3>
+          <p class="subcopy" style="margin: 0;">${entry.summary}</p>
+          <div class="keywords">
+            ${entry.keywords.map((keyword) => `<span class="keyword">${keyword}</span>`).join("")}
+          </div>
+          <p class="location">${entry.location.map((line) => `- ${line}`).join("\n")}</p>
+        `;
+        cards.appendChild(card);
+      }
+    }
+
+    searchInput.addEventListener("input", () => render(searchInput.value));
+    render();
+  </script>
+</body>
+</html>

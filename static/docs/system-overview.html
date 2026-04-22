@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body { margin:0; font-family:"Space Grotesk",sans-serif; background:#f8f4ed; color:#1f1a16; }
+    .shell { width:min(1100px, calc(100% - 32px)); margin:0 auto; padding:32px 0 56px; }
+    .panel { background:rgba(255,250,243,.92); border:1px solid rgba(44,34,22,.12); border-radius:24px; padding:24px; box-shadow:0 20px 60px rgba(48,33,10,.12); }
+    .eyebrow { text-transform:uppercase; letter-spacing:.18em; font-size:.75rem; color:#0f766e; margin:0 0 10px; }
+    h1, h2, h3 { margin-top:0; }
+    p, li { line-height:1.6; color:#675d55; }
+    ul { margin-top:8px; }
+    .meta { font-family:"IBM Plex Mono",monospace; font-size:.85rem; background:rgba(15,118,110,.06); border-radius:14px; padding:12px 14px; color:#1f1a16; }
+    .grid { display:grid; gap:16px; margin-top:18px; }
+    a { color:#0f766e; }
+    .buttons { display:flex; flex-wrap:wrap; gap:12px; margin-top:16px; }
+    .button { display:inline-flex; padding:12px 18px; border-radius:999px; text-decoration:none; background:#fffaf2; border:1px solid rgba(44,34,22,.12); color:#1f1a16; }
+    .button.primary { background:linear-gradient(135deg,#0f766e,#115e59); color:white; border-color:transparent; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="panel">
+      <p class="eyebrow">Knowledge Transfer</p>
+      <h1>System Overview</h1>
+      <p>This page explains the end-to-end flow: login, scrape, score, store, serve, and edit.</p>
+      <div class="buttons">
+        <a class="button primary" href="/static/docs/index.html">Docs Hub</a>
+        <a class="button" href="/static/index.html">Dashboard</a>
+      </div>
+
+      <div class="grid">
+        <div>
+          <h2>Start Here</h2>
+          <div class="meta">
+            Entry points: <code>backend-api.py</code>, <code>main.py</code>, <code>static/app.js</code>
+          </div>
+        </div>
+        <div>
+          <h2>Runtime Flow</h2>
+          <ul>
+            <li><code>backend-api.py</code> serves the dashboard and exposes JSON routes.</li>
+            <li><code>main.py</code> logs in, loops through keywords, scores jobs, and writes rows.</li>
+            <li><code>job_search.py</code> opens LinkedIn results, scrolls through cards, and filters jobs.</li>
+            <li><code>csv_writer.py</code> keeps the table deduped and preserves status fields.</li>
+            <li><code>static/app.js</code> loads jobs and lets you filter or update them in the browser.</li>
+          </ul>
+        </div>
+        <div>
+          <h2>Search Terms</h2>
+          <div class="meta">architecture | flow | entry point | scraper | dashboard | api</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

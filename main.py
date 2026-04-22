@@ -9,8 +9,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 from config import BASE_DIR, load_settings
-from csv_writer import load_seen_jobs, persist_seen_jobs, upsert_rows
-from job_search import collect_jobs_for_keyword
+from csv_writer import build_job_uid, load_seen_jobs, persist_seen_jobs, read_existing_rows, upsert_rows
+from job_sources import collect_jobs_for_source, enabled_sources
 from login import login_to_linkedin
 from scorer import score_job
 
@@ -46,9 +46,15 @@ def build_driver(settings: dict) -> webdriver.Chrome:
     return webdriver.Chrome(options=options)
 
 
-def process_keyword(driver, keyword: str, settings: dict, seen_job_ids: set[str]) -> list[dict[str, object]]:
+def process_keyword(
+    driver,
+    keyword: str,
+    settings: dict,
+    seen_job_uids: set[str],
+    source_key: str,
+) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
-    jobs = collect_jobs_for_keyword(driver, keyword, settings, seen_job_ids)
+    jobs = collect_jobs_for_source(source_key, driver, keyword, settings, seen_job_uids)
     for job in jobs:
         score_result = score_job(
             description=str(job.get("description", "")),
@@ -67,33 +73,43 @@ def process_keyword(driver, keyword: str, settings: dict, seen_job_ids: set[str]
 
 def run() -> Path:
     settings = load_settings()
-    persisted_seen_job_ids = load_seen_jobs(settings["jobs_seen_path"])
     output_csv_path: Path = settings["output_csv_path"]
+    persisted_seen_job_uids = load_seen_jobs(settings["jobs_seen_path"])
+    for existing_row in read_existing_rows(output_csv_path):
+        row_uid = build_job_uid(existing_row)
+        if row_uid:
+            persisted_seen_job_uids.add(row_uid)
     scraping = settings.get("scraping", {})
     between_keywords_min = float(scraping.get("between_keywords_min_seconds", 2.0))
     between_keywords_max = float(scraping.get("between_keywords_max_seconds", 4.0))
+    source_keys = enabled_sources(settings)
 
     driver = build_driver(settings)
     try:
-        login_to_linkedin(
-            driver=driver,
-            email=settings["linkedin_email"],
-            password=settings["linkedin_password"],
-            login_url=settings["linkedin"]["login_url"],
-        )
+        if "linkedin" in source_keys:
+            linkedin_settings = settings.get("job_sources", {}).get("linkedin", {})
+            login_to_linkedin(
+                driver=driver,
+                email=settings["linkedin_email"],
+                password=settings["linkedin_password"],
+                login_url=str(linkedin_settings.get("login_url", "https://www.linkedin.com/login")),
+            )
 
-        for keyword in settings["job_titles"]:
-            print(f"[scrape] keyword: {keyword}", flush=True)
-            new_rows = process_keyword(driver, keyword, settings, set())
-            print(f"[scrape] collected {len(new_rows)} rows for {keyword}", flush=True)
-            for row in new_rows:
-                upsert_rows(output_csv_path, [row])
-                job_id = str(row.get("job_id") or row.get("job_link") or "")
-                if job_id:
-                    persisted_seen_job_ids.add(job_id)
-                    persist_seen_jobs(settings["jobs_seen_path"], persisted_seen_job_ids)
+        for source_key in source_keys:
+            source_name = str(settings.get("job_sources", {}).get(source_key, {}).get("source_name", source_key.title()))
+            print(f"[scrape] source: {source_name}", flush=True)
+            for keyword in settings["job_titles"]:
+                print(f"[scrape] keyword: {keyword}", flush=True)
+                new_rows = process_keyword(driver, keyword, settings, persisted_seen_job_uids, source_key)
+                print(f"[scrape] collected {len(new_rows)} rows for {source_name} / {keyword}", flush=True)
+                for row in new_rows:
+                    upsert_rows(output_csv_path, [row])
+                    job_uid = str(row.get("job_uid") or "")
+                    if job_uid:
+                        persisted_seen_job_uids.add(job_uid)
+                        persist_seen_jobs(settings["jobs_seen_path"], persisted_seen_job_uids)
 
-            time.sleep(random.uniform(between_keywords_min, between_keywords_max))
+                time.sleep(random.uniform(between_keywords_min, between_keywords_max))
 
         return output_csv_path
     finally:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date, datetime, timedelta
 import re
 from urllib.parse import parse_qs, urlparse
 
@@ -99,6 +100,60 @@ def parse_location_from_description(text: str) -> str:
     match = re.search(r"(?im)^\s*location:\s*(.+?)\s*$", text)
     if match:
         return match.group(1).strip()
+    return ""
+
+
+def parse_job_age_days(text: str) -> int | None:
+    normalized = text.lower().strip()
+    if not normalized:
+        return None
+
+    if "just now" in normalized or normalized == "today":
+        return 0
+    if "yesterday" in normalized:
+        return 1
+
+    patterns: list[tuple[str, int]] = [
+        (r"(\d+)\s*(?:\+?\s*)?(?:minute|minutes|min|mins)\b", 0),
+        (r"(\d+)\s*(?:\+?\s*)?(?:hour|hours|hr|hrs)\b", 0),
+        (r"(\d+)\s*(?:\+?\s*)?(?:day|days)\b", 1),
+        (r"(\d+)\s*(?:\+?\s*)?(?:week|weeks)\b", 7),
+        (r"(\d+)\s*(?:\+?\s*)?(?:month|months)\b", 30),
+        (r"(\d+)\s*(?:\+?\s*)?(?:year|years)\b", 365),
+    ]
+
+    for pattern, multiplier in patterns:
+        match = re.search(pattern, normalized)
+        if match:
+            return int(match.group(1)) * multiplier
+
+    return None
+
+
+def parse_job_posted_date(text: str, reference_date: date | None = None) -> str:
+    reference = reference_date or date.today()
+    normalized = text.lower().strip()
+    if not normalized:
+        return ""
+
+    age_days = parse_job_age_days(normalized)
+    if age_days is not None:
+        return (reference - timedelta(days=age_days)).isoformat()
+
+    for fmt in ("%b %d, %Y", "%B %d, %Y", "%b %d %Y", "%B %d %Y"):
+        try:
+            parsed = datetime.strptime(text.strip(), fmt).date()
+            return parsed.isoformat()
+        except ValueError:
+            continue
+
+    for fmt in ("%b %d", "%B %d"):
+        try:
+            parsed = datetime.strptime(text.strip(), fmt).date()
+            return parsed.replace(year=reference.year).isoformat()
+        except ValueError:
+            continue
+
     return ""
 
 

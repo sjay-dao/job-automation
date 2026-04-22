@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 import random
 import time
 from typing import Generator
@@ -11,7 +12,15 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from parser import extract_card_snapshot, extract_description_panel, get_job_link, is_promoted
+from csv_writer import build_job_uid
+from parser import (
+    extract_card_snapshot,
+    extract_description_panel,
+    get_job_link,
+    is_promoted,
+    parse_job_age_days,
+    parse_job_posted_date,
+)
 from scroll_handler import find_scroll_container
 
 
@@ -22,7 +31,17 @@ JOB_CARD_SELECTOR = (
 )
 
 
-def build_jobs_url(base_url: str, keyword: str, location: str, date_posted: str) -> str:
+def utc_now_iso() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+
+
+def build_jobs_url(
+    base_url: str,
+    keyword: str,
+    location: str,
+    date_posted: str,
+    max_job_age_days: int | None = None,
+) -> str:
     posted_map = {
         "today": "r86400",
         "past_24_hours": "r86400",
@@ -43,10 +62,11 @@ def open_search_results(
     keyword: str,
     location: str,
     date_posted: str,
+    max_job_age_days: int | None = None,
     timeout: int = 20,
 ) -> None:
     wait = WebDriverWait(driver, timeout)
-    driver.get(build_jobs_url(jobs_url, keyword, location, date_posted))
+    driver.get(build_jobs_url(jobs_url, keyword, location, date_posted, max_job_age_days))
     wait.until(EC.presence_of_all_elements_located(JOB_CARD_SELECTOR))
 
 
@@ -123,14 +143,19 @@ def collect_jobs_for_keyword(
     driver: WebDriver,
     keyword: str,
     settings: dict,
-    seen_job_ids: set[str],
+    seen_job_uids: set[str],
 ) -> list[dict[str, object]]:
+    max_job_age_days = settings.get("max_job_age_days")
+    max_job_age_days = int(max_job_age_days) if isinstance(max_job_age_days, int) else None
+    linkedin_settings = settings.get("job_sources", {}).get("linkedin", {})
+    source_name = str(linkedin_settings.get("source_name", settings.get("source_name", "LinkedIn")) or "LinkedIn")
     open_search_results(
         driver,
         settings["linkedin"]["jobs_url"],
         keyword,
         settings["location"],
         settings["date_posted"],
+        max_job_age_days=max_job_age_days,
     )
 
     collected_jobs: list[dict[str, object]] = []
@@ -155,12 +180,27 @@ def collect_jobs_for_keyword(
 
             snapshot = extract_card_snapshot(card)
             job_id = snapshot.get("job_id") or snapshot.get("job_link")
+            job_uid = build_job_uid({
+                "source": source_name,
+                "job_id": job_id or "",
+                "job_link": snapshot.get("job_link") or "",
+            })
             if (
                 not job_id
-                or str(job_id) in seen_job_ids
+                or str(job_uid) in seen_job_uids
                 or str(job_id) in local_seen_ids
             ):
                 continue
+
+            if isinstance(max_job_age_days, int):
+                age_days = parse_job_age_days(str(snapshot.get("date_posted", "")))
+                if age_days is not None and age_days > max_job_age_days:
+                    continue
+
+            snapshot["posted_date"] = parse_job_posted_date(str(snapshot.get("date_posted", "")))
+            snapshot["status"] = "New"
+            snapshot["source"] = str(settings.get("source_name", "LinkedIn") or "LinkedIn")
+            snapshot["last_updated"] = utc_now_iso()
 
             details = load_job_details(driver, card)
             applicant_count = details.get("applicant_count")
@@ -180,6 +220,8 @@ def collect_jobs_for_keyword(
                 snapshot["location"] = details.get("derived_location", "")
             if not snapshot.get("title"):
                 continue
+            snapshot["job_uid"] = job_uid
+            snapshot["source"] = source_name
             snapshot["search_keyword"] = keyword
             collected_jobs.append(snapshot)
             local_seen_ids.add(str(job_id))

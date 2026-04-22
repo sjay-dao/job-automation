@@ -146,7 +146,7 @@ summary {
 
 .control-panel {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
   margin-top: 24px;
   padding: 20px;
@@ -218,11 +218,22 @@ summary {
   box-shadow: 0 20px 60px rgba(15, 118, 110, 0.14);
 }
 
+.job-card--active {
+  border-color: rgba(15, 118, 110, 0.26);
+}
+
 .job-card-top {
   display: flex;
   justify-content: space-between;
   gap: 16px;
   align-items: start;
+}
+
+.job-card-actions {
+  display: grid;
+  gap: 10px;
+  min-width: min(220px, 100%);
+  justify-items: stretch;
 }
 
 .job-score {
@@ -240,18 +251,26 @@ summary {
   margin: 8px 0 0;
 }
 
-.job-status {
-  margin: 10px 0 0;
-  min-height: 1em;
+.job-status-control {
+  display: grid;
+  gap: 6px;
   font-size: 0.82rem;
   font-family: "IBM Plex Mono", monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: transparent;
+  color: var(--muted);
 }
 
-.job-status--opened {
-  color: var(--accent);
+.job-status-control span {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.job-status-select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.92);
+  font: inherit;
 }
 
 .job-meta {
@@ -286,13 +305,20 @@ summary {
 
 @media (max-width: 900px) {
   .hero,
-  .control-panel,
   .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .control-panel {
     grid-template-columns: 1fr;
   }
 
   .job-card-top {
     flex-direction: column;
+  }
+
+  .job-card-actions {
+    width: 100%;
   }
 
   .job-link {

@@ -40,6 +40,67 @@ def slugify_keyword(keyword: str) -> str:
     return slug or "jobs"
 
 
+def build_jobstreet_search_url(
+    jobs_url_base: str,
+    keyword: str,
+    date_posted: str,
+    max_job_age_days: int | None = None,
+) -> str:
+    base = jobs_url_base.rstrip("/")
+    search_url = f"{base}/{slugify_keyword(keyword)}-jobs"
+    date_value = str(date_posted or "").strip().lower()
+
+    daterange = None
+    if isinstance(max_job_age_days, int) and max_job_age_days > 0:
+        daterange = str(max_job_age_days)
+    elif date_value in {"today", "past_24_hours"}:
+        daterange = "1"
+    elif date_value == "past_week":
+        daterange = "7"
+    elif date_value == "past_month":
+        daterange = "30"
+
+    if not daterange:
+        return search_url
+
+    return f"{search_url}?{urlencode({'daterange': daterange})}"
+
+
+def build_indeed_search_url(
+    jobs_url_base: str,
+    keyword: str,
+    location: str,
+    date_posted: str,
+    max_job_age_days: int | None = None,
+) -> str:
+    base = jobs_url_base.rstrip("/")
+    date_value = str(date_posted or "").strip().lower()
+    location_value = str(location or "").strip()
+
+    if "ph.indeed.com" in base.lower() and location_value.lower() in {"philippines", "ph"}:
+        location_value = ""
+
+    fromage = None
+    if isinstance(max_job_age_days, int) and max_job_age_days > 0:
+        fromage = max_job_age_days
+    elif date_value in {"today", "past_24_hours"}:
+        fromage = 1
+    elif date_value == "past_week":
+        fromage = 7
+    elif date_value == "past_month":
+        fromage = 30
+
+    query: dict[str, str | int] = {
+        "q": keyword,
+        "l": location_value,
+        "from": "searchOnDesktopSerp",
+    }
+    if isinstance(fromage, int) and fromage > 0:
+        query["fromage"] = fromage
+
+    return f"{base}?{urlencode(query)}"
+
+
 def extract_href(card: WebElement, xpaths: list[str]) -> str:
     try:
         href = card.get_attribute("href")
@@ -586,7 +647,12 @@ def collect_jobstreet_jobs(
     login_timeout_seconds = settings.get("jobstreet_login_timeout_seconds", 240)
     login_timeout_seconds = int(login_timeout_seconds) if isinstance(login_timeout_seconds, int) else 240
 
-    search_url = f"{jobs_url_base}/{slugify_keyword(keyword)}-jobs"
+    search_url = build_jobstreet_search_url(
+        jobs_url_base,
+        keyword,
+        str(settings.get("date_posted", "")),
+        max_job_age_days=max_job_age_days,
+    )
     safe_get(driver, search_url)
     wait_for_jobstreet_login(driver, timeout_seconds=login_timeout_seconds)
 
@@ -683,19 +749,16 @@ def collect_indeed_jobs(
     between_cards_max = float(scraping.get("between_cards_max_seconds", 1.6))
     max_job_age_days = settings.get("max_job_age_days")
     max_job_age_days = int(max_job_age_days) if isinstance(max_job_age_days, int) else None
-    fromage = max(1, int(max_job_age_days or 1))
     verification_timeout_seconds = settings.get("indeed_verification_timeout_seconds", 240)
     verification_timeout_seconds = int(verification_timeout_seconds) if isinstance(verification_timeout_seconds, int) else 240
 
-    query = urlencode(
-        {
-            "q": keyword,
-            "l": settings.get("location", ""),
-            "fromage": fromage,
-            "sort": "date",
-        },
+    search_url = build_indeed_search_url(
+        jobs_url_base,
+        keyword,
+        str(settings.get("location", "")),
+        str(settings.get("date_posted", "")),
+        max_job_age_days=max_job_age_days,
     )
-    search_url = f"{jobs_url_base}?{query}"
     safe_get(driver, search_url)
     wait_for_indeed_verification(driver, timeout_seconds=verification_timeout_seconds)
     card_selector = (

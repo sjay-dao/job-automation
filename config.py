@@ -283,7 +283,7 @@ DEFAULT_JOB_SOURCES = {
     "indeed": {
         "enabled": True,
         "source_name": "Indeed",
-        "jobs_url_base": "https://www.indeed.com/jobs",
+        "jobs_url_base": "https://ph.indeed.com/jobs",
     },
 }
 

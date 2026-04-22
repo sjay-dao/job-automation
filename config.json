@@ -40,7 +40,9 @@
     }
   },
   "browser": {
-    "headless": false
+    "headless": false,
+    "user_data_dir": "",
+    "profile_directory": ""
   },
   "scraping": {
     "scroll_pause_seconds": 1.1,

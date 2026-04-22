@@ -112,6 +112,49 @@ def extract_body_text(driver: WebDriver, timeout: int = 12) -> str:
         return ""
 
 
+def looks_like_jobstreet_login_wall(driver: WebDriver) -> bool:
+    try:
+        page_text = extract_body_text(driver, timeout=4).lower()
+    except Exception:
+        page_text = ""
+
+    try:
+        page_title = (driver.title or "").lower()
+    except Exception:
+        page_title = ""
+
+    if "continue with google" in page_text or "continue with google" in page_title:
+        return True
+    if "sign in with google" in page_text or "sign in with google" in page_title:
+        return True
+    if "jobstreet" in page_title and ("sign in" in page_text or "log in" in page_text):
+        return True
+    return False
+
+
+def wait_for_jobstreet_login(driver: WebDriver, timeout_seconds: int = 240) -> None:
+    if not looks_like_jobstreet_login_wall(driver):
+        return
+
+    print(
+        "[jobstreet] JobStreet is asking for Google sign-in. "
+        "Complete the login in the opened browser window; scraping will resume automatically.",
+        flush=True,
+    )
+    deadline = time.time() + timeout_seconds
+    while time.time() < deadline and looks_like_jobstreet_login_wall(driver):
+        time.sleep(2.0)
+
+    if looks_like_jobstreet_login_wall(driver):
+        raise RuntimeError(
+            "JobStreet still appears to be signed out. "
+            "Use a Chrome profile that is already logged into Google/JobStreet, "
+            "or log in in the opened browser window and rerun the scraper."
+        )
+
+    print("[jobstreet] JobStreet login detected; continuing scraping.", flush=True)
+
+
 def extract_detail_date(text: str) -> str:
     lines = compact_lines(text)
     match = first_matching_line(
@@ -336,6 +379,7 @@ def collect_jobstreet_jobs(
 
     search_url = f"{jobs_url_base}/{slugify_keyword(keyword)}-jobs"
     driver.get(search_url)
+    wait_for_jobstreet_login(driver)
     WebDriverWait(driver, 20).until(EC.presence_of_all_elements_located((By.XPATH, "//a[contains(@href,'/job/') and contains(@href,'origin=cardTitle')]")))
 
     snapshots: list[dict[str, object]] = []

@@ -298,6 +298,8 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "job_sources": DEFAULT_JOB_SOURCES,
     "browser": {
         "headless": False,
+        "user_data_dir": "",
+        "profile_directory": "",
     },
     "scraping": {
         "scroll_pause_seconds": 1.1,

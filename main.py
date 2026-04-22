@@ -39,7 +39,14 @@ def build_driver(settings: dict) -> webdriver.Chrome:
     options.add_argument("--disable-popup-blocking")
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--window-size=1440,1200")
-    if settings.get("browser", {}).get("headless"):
+    browser_settings = settings.get("browser", {})
+    user_data_dir = str(browser_settings.get("user_data_dir", "") or "").strip()
+    profile_directory = str(browser_settings.get("profile_directory", "") or "").strip()
+    if user_data_dir:
+        options.add_argument(f"--user-data-dir={user_data_dir}")
+    if profile_directory:
+        options.add_argument(f"--profile-directory={profile_directory}")
+    if browser_settings.get("headless"):
         options.add_argument("--headless=new")
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option("useAutomationExtension", False)
@@ -83,6 +90,14 @@ def run() -> Path:
     between_keywords_min = float(scraping.get("between_keywords_min_seconds", 2.0))
     between_keywords_max = float(scraping.get("between_keywords_max_seconds", 4.0))
     source_keys = enabled_sources(settings)
+    browser_settings = settings.get("browser", {})
+
+    if "jobstreet" in source_keys and not str(browser_settings.get("user_data_dir", "") or "").strip():
+        print(
+            "[jobstreet] Tip: set browser.user_data_dir in config.json to reuse a logged-in Chrome profile. "
+            "If JobStreet shows a Google sign-in wall, the scraper will pause for manual login.",
+            flush=True,
+        )
 
     driver = build_driver(settings)
     try:

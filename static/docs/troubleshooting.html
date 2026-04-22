@@ -49,6 +49,14 @@
           </ul>
         </div>
         <div>
+          <h2>If JobStreet shows a Google sign-in wall</h2>
+          <ul>
+            <li>Set <code>browser.user_data_dir</code> and <code>browser.profile_directory</code> in <code>config.json</code> to a Chrome profile that is already logged in.</li>
+            <li>If the browser opens to a <code>Continue with Google</code> page, complete the sign-in manually and the scraper will resume automatically.</li>
+            <li>Inspect <code>job_sources.py -> wait_for_jobstreet_login()</code> and <code>collect_jobstreet_jobs()</code>.</li>
+          </ul>
+        </div>
+        <div>
           <h2>If the dashboard looks wrong</h2>
           <ul>
             <li>Check <code>backend-api.py -> /api/jobs</code>.</li>

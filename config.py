@@ -295,11 +295,12 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "source_name": "LinkedIn",
     "max_applicants": None,
     "max_jobs_per_keyword": 250,
+    "jobstreet_login_timeout_seconds": 240,
     "job_sources": DEFAULT_JOB_SOURCES,
     "browser": {
         "headless": False,
-        "user_data_dir": "",
-        "profile_directory": "",
+        "user_data_dir": str(BASE_DIR / ".chrome-jobstreet-profile"),
+        "profile_directory": "Default",
     },
     "scraping": {
         "scroll_pause_seconds": 1.1,

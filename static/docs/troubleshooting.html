@@ -51,6 +51,7 @@
         <div>
           <h2>If JobStreet shows a Google sign-in wall</h2>
           <ul>
+            <li>The default browser profile is <code>.chrome-jobstreet-profile</code> inside the project, so it stays separate from your normal Chrome session.</li>
             <li>Set <code>browser.user_data_dir</code> and <code>browser.profile_directory</code> in <code>config.json</code> to a Chrome profile that is already logged in.</li>
             <li>If the browser opens to a <code>Continue with Google</code> page, complete the sign-in manually and the scraper will resume automatically.</li>
             <li>Inspect <code>job_sources.py -> wait_for_jobstreet_login()</code> and <code>collect_jobstreet_jobs()</code>.</li>

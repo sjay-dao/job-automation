@@ -30,6 +30,8 @@ def utc_now_iso() -> str:
 
 
 def compact_lines(text: str) -> list[str]:
+    if not text:
+        return []
     return [line.strip() for line in text.splitlines() if line.strip()]
 
 
@@ -39,6 +41,13 @@ def slugify_keyword(keyword: str) -> str:
 
 
 def extract_href(card: WebElement, xpaths: list[str]) -> str:
+    try:
+        href = card.get_attribute("href")
+        if href:
+            return href.split("#")[0]
+    except Exception:
+        pass
+
     for xpath in xpaths:
         try:
             href = card.find_element(By.XPATH, xpath).get_attribute("href")
@@ -50,16 +59,20 @@ def extract_href(card: WebElement, xpaths: list[str]) -> str:
 
 
 def get_card_container(card: WebElement) -> WebElement:
+    fallback = card
     for xpath in [
         "./ancestor::article[1]",
         "./ancestor::li[1]",
         "./ancestor::div[1]",
     ]:
         try:
-            return card.find_element(By.XPATH, xpath)
+            candidate = card.find_element(By.XPATH, xpath)
+            if str(candidate.text or "").strip():
+                return candidate
+            fallback = candidate
         except Exception:
             continue
-    return card
+    return fallback
 
 
 def extract_jobstreet_job_id(job_link: str) -> str:
@@ -90,6 +103,17 @@ def first_matching_line(lines: list[str], patterns: list[str]) -> str:
             if re.search(pattern, line, flags=re.IGNORECASE):
                 return line
     return ""
+
+
+def is_jobstreet_age_line(line: str) -> bool:
+    lowered = line.lower()
+    return bool(
+        re.search(r"(?i)\b(?:posted|listed)\s+.+ago\b", line)
+        or re.search(r"(?i)\b\d+\s*(?:m|h|d|w)\s+ago\b", line)
+        or re.search(r"(?i)\b\d+\s*(?:minute|minutes|hour|hours|day|days|week|weeks)\s+ago\b", line)
+        or "just posted" in lowered
+        or lowered == "new"
+    )
 
 
 def last_non_empty_line(lines: list[str]) -> str:
@@ -123,11 +147,18 @@ def looks_like_jobstreet_login_wall(driver: WebDriver) -> bool:
     except Exception:
         page_title = ""
 
+    try:
+        current_url = (driver.current_url or "").lower()
+    except Exception:
+        current_url = ""
+
     if "continue with google" in page_text or "continue with google" in page_title:
         return True
     if "sign in with google" in page_text or "sign in with google" in page_title:
         return True
-    if "jobstreet" in page_title and ("sign in" in page_text or "log in" in page_text):
+    if "accounts.google.com" in current_url:
+        return True
+    if "google" in page_title and ("sign in" in page_title or "account" in page_title):
         return True
     return False
 
@@ -187,33 +218,54 @@ def parse_jobstreet_card(card: WebElement, source_name: str, keyword: str) -> di
     job_link = extract_href(
         card,
         [
-            ".//a[contains(@href,'/job/') and contains(@href,'origin=cardTitle')]",
+            ".//a[contains(@href,'/job/') and contains(@href,'type=standard')]",
             ".//a[contains(@href,'/job/')]",
         ],
     )
     job_id = extract_jobstreet_job_id(job_link)
-    title = lines[0] if lines else ""
+    title = ""
+    title_index = None
+    for idx, line in enumerate(lines):
+        if is_jobstreet_age_line(line) or line.lower() == "at":
+            continue
+        title = line
+        title_index = idx
+        break
+
     company = ""
-    for line in lines[1:4]:
+    company_index = None
+    for idx, line in enumerate(lines):
+        if line.lower() == "at" and idx + 1 < len(lines):
+            company = lines[idx + 1]
+            company_index = idx + 1
+            break
         if line.lower().startswith("at "):
             company = line[3:].strip()
+            company_index = idx
             break
 
-    if not company and len(lines) > 1:
-        company = lines[1]
+    if not company:
+        search_start = (title_index + 1) if title_index is not None else 0
+        for idx in range(search_start, min(search_start + 4, len(lines))):
+            line = lines[idx]
+            if line.lower() == "at" or is_jobstreet_age_line(line):
+                continue
+            if re.search(r"\b(remote|hybrid|onsite|on-site|metro manila|philippines|city)\b", line, flags=re.IGNORECASE):
+                continue
+            if title and line == title:
+                continue
+            company = line
+            company_index = idx
+            break
 
-    location = first_matching_line(
-        lines,
-        [
-            r"\bremote\b",
-            r"\bhybrid\b",
-            r"\bonsite\b",
-            r"\bon-site\b",
-            r"\bMetro Manila\b",
-            r"\bPhilippines\b",
-            r"\bCity\b",
-        ],
-    )
+    location = ""
+    search_start = (company_index + 1) if company_index is not None else ((title_index + 1) if title_index is not None else 0)
+    for line in lines[search_start:]:
+        if is_jobstreet_age_line(line):
+            continue
+        if re.search(r"\b(remote|hybrid|onsite|on-site|metro manila|philippines|city|pasig|makati|taguig|manila)\b", line, flags=re.IGNORECASE):
+            location = line
+            break
     date_posted = first_matching_line(
         lines,
         [
@@ -376,16 +428,18 @@ def collect_jobstreet_jobs(
     between_cards_max = float(scraping.get("between_cards_max_seconds", 1.6))
     max_job_age_days = settings.get("max_job_age_days")
     max_job_age_days = int(max_job_age_days) if isinstance(max_job_age_days, int) else None
+    login_timeout_seconds = settings.get("jobstreet_login_timeout_seconds", 240)
+    login_timeout_seconds = int(login_timeout_seconds) if isinstance(login_timeout_seconds, int) else 240
 
     search_url = f"{jobs_url_base}/{slugify_keyword(keyword)}-jobs"
     driver.get(search_url)
-    wait_for_jobstreet_login(driver)
-    WebDriverWait(driver, 20).until(EC.presence_of_all_elements_located((By.XPATH, "//a[contains(@href,'/job/') and contains(@href,'origin=cardTitle')]")))
+    wait_for_jobstreet_login(driver, timeout_seconds=login_timeout_seconds)
+    WebDriverWait(driver, 20).until(EC.presence_of_all_elements_located((By.XPATH, "//a[contains(@href,'/job/') and contains(@href,'type=standard')]")))
 
     snapshots: list[dict[str, object]] = []
     for snapshot in collect_cards(
         driver,
-        (By.XPATH, "//a[contains(@href,'/job/') and contains(@href,'origin=cardTitle')]"),
+        (By.XPATH, "//a[contains(@href,'/job/') and contains(@href,'type=standard')]"),
         lambda card: parse_jobstreet_card(card, source_name, keyword),
         max_jobs=max_jobs,
         pause_seconds=scroll_pause_seconds,

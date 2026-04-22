@@ -17,6 +17,7 @@ CSV_COLUMNS = [
     "title",
     "company",
     "location",
+    "extracted_location",
     "date_posted",
     "posted_date",
     "applicant_count",
@@ -36,7 +37,7 @@ def build_job_uid(row: dict[str, object]) -> str:
     if not identifier:
         title = str(row.get("title") or "").strip()
         company = str(row.get("company") or "").strip()
-        location = str(row.get("location") or "").strip()
+        location = str(row.get("location") or row.get("extracted_location") or "").strip()
         identifier = "|".join(part for part in [title, company, location] if part)
     return f"{source}:{identifier}" if identifier else ""
 
@@ -125,6 +126,8 @@ def upsert_rows(csv_path: Path, new_rows: list[dict[str, object]]) -> None:
                 row = {**row, "status": "New"}
             if not row.get("source"):
                 row = {**row, "source": "LinkedIn"}
+            if not row.get("extracted_location"):
+                row["extracted_location"] = row.get("location", "")
             writer.writerow({column: row.get(column, "") for column in CSV_COLUMNS})
 
 
@@ -159,6 +162,8 @@ def update_row(csv_path: Path, job_key: str, updates: dict[str, object]) -> bool
                 row = {**row, "status": "New"}
             if not row.get("source"):
                 row = {**row, "source": "LinkedIn"}
+            if not row.get("extracted_location"):
+                row["extracted_location"] = row.get("location", "")
             writer.writerow({column: row.get(column, "") for column in CSV_COLUMNS})
 
     return True

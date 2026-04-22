@@ -58,6 +58,17 @@ def extract_href(card: WebElement, xpaths: list[str]) -> str:
     return ""
 
 
+def extract_text(card: WebElement, xpaths: list[str]) -> str:
+    for xpath in xpaths:
+        try:
+            text = card.find_element(By.XPATH, xpath).text
+            if text and str(text).strip():
+                return str(text).strip()
+        except Exception:
+            continue
+    return ""
+
+
 def get_card_container(card: WebElement) -> WebElement:
     fallback = card
     for xpath in [
@@ -124,14 +135,10 @@ def last_non_empty_line(lines: list[str]) -> str:
 
 
 def extract_body_text(driver: WebDriver, timeout: int = 12) -> str:
-    wait = WebDriverWait(driver, timeout)
     try:
-        wait.until(lambda drv: bool(drv.find_element(By.TAG_NAME, "body").text.strip()))
-    except TimeoutException:
-        pass
-
-    try:
-        return driver.find_element(By.TAG_NAME, "body").text.strip()
+        body = driver.find_element(By.TAG_NAME, "body")
+        text = getattr(body, "text", "")
+        return str(text or "").strip()
     except Exception:
         return ""
 
@@ -184,6 +191,48 @@ def wait_for_jobstreet_login(driver: WebDriver, timeout_seconds: int = 240) -> N
         )
 
     print("[jobstreet] JobStreet login detected; continuing scraping.", flush=True)
+
+
+def looks_like_indeed_verification_wall(driver: WebDriver) -> bool:
+    try:
+        page_text = extract_body_text(driver, timeout=4).lower()
+    except Exception:
+        page_text = ""
+
+    try:
+        page_title = (driver.title or "").lower()
+    except Exception:
+        page_title = ""
+
+    if "additional verification required" in page_text:
+        return True
+    if "cloudflare" in page_text and "verification" in page_text:
+        return True
+    if "additional verification required" in page_title:
+        return True
+    return False
+
+
+def wait_for_indeed_verification(driver: WebDriver, timeout_seconds: int = 240) -> None:
+    if not looks_like_indeed_verification_wall(driver):
+        return
+
+    print(
+        "[indeed] Indeed is showing Cloudflare verification. "
+        "Complete the verification in the browser window; scraping will resume automatically.",
+        flush=True,
+    )
+    deadline = time.time() + timeout_seconds
+    while time.time() < deadline and looks_like_indeed_verification_wall(driver):
+        time.sleep(2.0)
+
+    if looks_like_indeed_verification_wall(driver):
+        raise RuntimeError(
+            "Indeed is still showing Cloudflare verification. "
+            "Open the browser window, complete the challenge, or try again later."
+        )
+
+    print("[indeed] Verification cleared; continuing scraping.", flush=True)
 
 
 def extract_detail_date(text: str) -> str:
@@ -283,6 +332,7 @@ def parse_jobstreet_card(card: WebElement, source_name: str, keyword: str) -> di
         "title": title,
         "company": company,
         "location": normalize_location_line(location),
+        "extracted_location": normalize_location_line(location),
         "date_posted": date_posted,
         "source": source_name,
         "search_keyword": keyword,
@@ -302,16 +352,26 @@ def parse_indeed_card(card: WebElement, source_name: str, keyword: str, location
     )
     job_id = extract_indeed_job_id(job_link)
 
-    title = lines[0] if lines else ""
-    company = ""
-    location_text = ""
+    title = extract_text(
+        card,
+        [
+            ".//a[contains(@class,'jcs-JobTitle')]//span",
+            ".//a[contains(@class,'jcs-JobTitle')]",
+        ],
+    )
+    if not title and lines:
+        title = lines[0]
+
+    company = extract_text(card, [".//*[@data-testid='company-name']"])
+    location_text = extract_text(card, [".//*[@data-testid='text-location']"])
+
     for line in lines[1:6]:
         lowered = line.lower()
         if not company and lowered not in {"new", "today"} and not re.search(r"\b\d+(\.\d+)?\s+out of\s+5\b", line.lower()):
             if not re.search(r"\b(remote|hybrid|city|county|state|province|philippines)\b", lowered):
                 company = line
                 continue
-        if not location_text and re.search(r"\b(remote|hybrid|city|county|state|province|philippines|work in)\b", lowered):
+        if not location_text and re.search(r"\b(remote|hybrid|city|county|state|province|philippines|work in|ca\b|tx\b|ny\b|wa\b)\b", lowered):
             location_text = line
 
     if not location_text:
@@ -336,6 +396,7 @@ def parse_indeed_card(card: WebElement, source_name: str, keyword: str, location
         "title": title,
         "company": company,
         "location": normalize_location_line(location_text),
+        "extracted_location": normalize_location_line(location_text),
         "date_posted": date_posted,
         "source": source_name,
         "search_keyword": keyword,
@@ -406,6 +467,7 @@ def collect_detail_page_data(driver: WebDriver, source_name: str, snapshot: dict
     snapshot["posted_date"] = parse_job_posted_date(str(snapshot.get("date_posted", "")))
     snapshot["description"] = detail_text
     snapshot["source"] = source_name
+    snapshot["extracted_location"] = snapshot.get("extracted_location") or snapshot.get("location") or ""
     snapshot["search_keyword"] = keyword
     snapshot["last_updated"] = utc_now_iso()
     return snapshot
@@ -495,6 +557,8 @@ def collect_indeed_jobs(
     max_job_age_days = settings.get("max_job_age_days")
     max_job_age_days = int(max_job_age_days) if isinstance(max_job_age_days, int) else None
     fromage = max(1, int(max_job_age_days or 1))
+    verification_timeout_seconds = settings.get("indeed_verification_timeout_seconds", 240)
+    verification_timeout_seconds = int(verification_timeout_seconds) if isinstance(verification_timeout_seconds, int) else 240
 
     query = urlencode(
         {
@@ -506,19 +570,17 @@ def collect_indeed_jobs(
     )
     search_url = f"{jobs_url_base}?{query}"
     driver.get(search_url)
-    WebDriverWait(driver, 20).until(
-        EC.presence_of_all_elements_located(
-            (
-                By.XPATH,
-                "//a[contains(@href,'/viewjob?jk=') or contains(@href,'/rc/clk?jk=') or contains(@href,'jk=')]",
-            ),
-        ),
+    wait_for_indeed_verification(driver, timeout_seconds=verification_timeout_seconds)
+    card_selector = (
+        By.XPATH,
+        "//div[contains(@class,'tapItem') and .//a[contains(@class,'jcs-JobTitle')]]",
     )
+    WebDriverWait(driver, 20).until(lambda drv: len(drv.find_elements(*card_selector)) > 0)
 
     snapshots: list[dict[str, object]] = []
     for snapshot in collect_cards(
         driver,
-        (By.XPATH, "//a[contains(@href,'/viewjob?jk=') or contains(@href,'/rc/clk?jk=') or contains(@href,'jk=')]"),
+        card_selector,
         lambda card: parse_indeed_card(card, source_name, keyword, str(settings.get("location", ""))),
         max_jobs=max_jobs,
         pause_seconds=scroll_pause_seconds,
@@ -572,6 +634,8 @@ def collect_jobs_for_source(
             job["job_uid"] = build_job_uid(source_name, str(job.get("job_id") or ""), str(job.get("job_link") or ""))
             if not job.get("posted_date"):
                 job["posted_date"] = parse_job_posted_date(str(job.get("date_posted", "")))
+            if not job.get("extracted_location"):
+                job["extracted_location"] = job.get("location") or ""
             job["last_updated"] = job.get("last_updated") or utc_now_iso()
         return jobs
 

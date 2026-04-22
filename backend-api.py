@@ -32,6 +32,9 @@ def normalize_job_row(row: dict[str, str]) -> dict[str, str]:
     normalized["source"] = str(normalized.get("source") or DEFAULT_SOURCE).strip() or DEFAULT_SOURCE
     normalized["last_updated"] = str(normalized.get("last_updated") or "").strip()
     normalized["job_uid"] = str(normalized.get("job_uid") or build_job_uid(normalized)).strip()
+    normalized["extracted_location"] = str(
+        normalized.get("extracted_location") or normalized.get("location") or ""
+    ).strip()
     posted_date = str(normalized.get("posted_date") or "").strip()
     if not posted_date:
         posted_date = parse_job_posted_date(str(normalized.get("date_posted") or ""))

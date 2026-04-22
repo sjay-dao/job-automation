@@ -22,6 +22,7 @@
   "max_applicants": null,
   "max_jobs_per_keyword": 250,
   "jobstreet_login_timeout_seconds": 240,
+  "indeed_verification_timeout_seconds": 240,
   "job_sources": {
     "linkedin": {
       "enabled": true,

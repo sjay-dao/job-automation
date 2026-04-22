@@ -58,6 +58,14 @@
           </ul>
         </div>
         <div>
+          <h2>If Indeed shows Cloudflare verification</h2>
+          <ul>
+            <li>Complete the verification in the browser window before the timeout expires.</li>
+            <li>Inspect <code>job_sources.py -> wait_for_indeed_verification()</code> and <code>collect_indeed_jobs()</code>.</li>
+            <li>If it keeps failing, the site may have tightened anti-bot rules and the selectors or access path may need another update.</li>
+          </ul>
+        </div>
+        <div>
           <h2>If the dashboard looks wrong</h2>
           <ul>
             <li>Check <code>backend-api.py -> /api/jobs</code>.</li>

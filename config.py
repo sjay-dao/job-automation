@@ -296,6 +296,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "max_applicants": None,
     "max_jobs_per_keyword": 250,
     "jobstreet_login_timeout_seconds": 240,
+    "indeed_verification_timeout_seconds": 240,
     "job_sources": DEFAULT_JOB_SOURCES,
     "browser": {
         "headless": False,
